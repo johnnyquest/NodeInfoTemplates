@@ -155,13 +155,13 @@ ${ "[]" if "Array" in datatype else "" }</tt>\
         if verbose or showname in showall:
             limit = len(rows)
         else:
-            limit = min(32, len(rows))
+            limit = min(20, len(rows))
     %>
 
     % if rows:
         %for i, row in enumerate(rows[:limit]):
             % if i:
-                ,
+                <br/>
             % endif
             ${ show_attr(dict(zip(heads, row)), style, verbose, debug, compact) }
         %endfor
