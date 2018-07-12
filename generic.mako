@@ -42,6 +42,16 @@
 
 %>
 
+<%
+    # imre: getting node author name
+    author = '...'
+    try:
+        author = hou.hscript('opstat -u %s' % infoitem.path())[0]
+        author = author.split(' ')[-1].split('\n')[0]
+    except:
+        author = "?"
+%>
+
 % for branch in unknown:
     ${ self.properties(branch, recursive=True, renames=renames) }
 % endfor
@@ -61,4 +71,10 @@
     % if "General Info" in branches:
         ${ self.branch_rows(branches["General Info"], recursive=True, renames=renames)}
     % endif
+    
+    <tr>
+        <td class="key">Author</td>
+        <td class="value">${author}</td>
+    </tr>
+    
 </table>
