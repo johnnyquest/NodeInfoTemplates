@@ -49,6 +49,24 @@
 
 %>
 
+<%
+    # imre: getting node author name and source path
+    author = '...'
+    try:
+        author = hou.hscript('opstat -u %s' % infoitem.path())[0]
+        author = author.split(' ')[-1].split('\n')[0]
+    except:
+        author = '?'
+
+    sourcepath = None
+    try:
+	t = infoitem.type()
+	if t.source() == hou.nodeTypeSource.CompiledCode:
+	    sourcepath = t.sourcePath()
+    except:
+	pass
+%>
+
 % if userdata:
     <table>
     % for key, value in userdata:
@@ -88,4 +106,14 @@
     % if "General Info" in branches:
         ${ self.branch_rows(branches["General Info"], recursive=True, renames=renames)}
     % endif
-</table>
+    <tr>
+        <td class="key">Author</td>
+        <td class="value">${author}</td>
+    </tr>
+    % if sourcepath:
+    <tr>
+        <td class="key">DSO Path</td>
+        <td class="value">${sourcepath}</td>
+    </tr>
+    % endif
+ </table>
