@@ -36,6 +36,7 @@
     ${ obj_row(d, "     Render  SOP", "Render", 1) }
     ${ obj_row(d, "Constraints CHOP", "Constraints", 2) }
     ${ obj_row(d, "Transform Order", "Transform Order", tt=True) }
+    ${ obj_row(d, "Local Transform", "Local Transform", tt=True) }
     ${ obj_row(d, "World Transform", "World Transform", tt=True) }
     ${ obj_row(d, "Pre-Transform", "Pre-Transform", tt=True) }
 </table>

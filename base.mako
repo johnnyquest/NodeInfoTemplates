@@ -10,14 +10,14 @@
     </table>
 </%def>
 
-<%def name="kv_row(key, value, cls='', tt=False, renames=None, keywidth='80')">
+<%def name="kv_row(key, value, cls=u'', tt=False, renames=None, keywidth=u'80')">
     <tr>
         <td width="${ keywidth }" class="${cls} key">
             ${ renames.get(key, key) if renames else key }
         </td>
         <td class="${cls} value">
             % if tt or key == "Comment":
-                <pre>${ value.replace('\n', '<br/>') }</pre>
+                <pre>${ value.replace(u'\n', u'<br/>') }</pre>
             % else:
                 ${ value }
             % endif
@@ -25,7 +25,7 @@
     </tr>
 </%def>
 
-<%def name="vector_row(key, value, cls='', renames=None, keywidth='80')">
+<%def name="vector_row(key, value, cls=u'', renames=None, keywidth=u'80')">
     <% components = ni.format_components(value) %>
     <tr>
         <td width="${ keywidth }" class="${cls} key">
@@ -33,7 +33,7 @@
         </td>
         % for i, num in enumerate(components):
             <td class="${cls} value" align="right">
-                <tt>${num}${"," if i < len(components) - 1 else ""}</tt>
+                <tt>${num}${u"," if i < len(components) - 1 else u""}</tt>
             </td>
         % endfor
     </tr>

@@ -22,9 +22,15 @@
     # Memory is displayed in the "generic.mako" template, not here
     hidden = ["Memory",]
 
-    infobranches = info.branches()
-    geobranch = infobranches.get("SOP Info")
-    lsysbranch = infobranches.get("L-System SOP Info")
+    # Branch information for the main node
+    maininfobranches = maininfo.branches()
+    maingeobranch = maininfobranches.get("SOP Info")
+    mainlsysbranch = maininfobranches.get("L-System SOP Info")
+
+    # If input node is provided, get its geometry branch
+    if inputitem:
+        inputinfobranches = inputinfo.branches()
+        inputgeobranch = inputinfobranches.get("SOP Info")
 
     groups = [
         ('Point Groups', 'points'),
@@ -56,19 +62,56 @@
     }
 %>
 
-% if geobranch:
+% if maingeobranch:
     <%
-        d = dict(geobranch.rows())
-        branches = geobranch.branches()
-        countbranch = branches.get("Counts")
+        from itertools import chain
+        from collections import defaultdict
+
+        d = dict(maingeobranch.rows())
+        mainbranches = maingeobranch.branches()
+        maincountbranch = mainbranches.get("Counts")
+        inputbranches = {}
+        allbranches = defaultdict(list)
+        if inputitem:
+            inputbranches = inputgeobranch.branches()
+
+        # Build a dictionary with the list of branches in both the main and 
+        # input node
+        for name, value in chain(mainbranches.items(), inputbranches.items()):
+            allbranches[name].append(value)
+            
+        self.showdiffs = showdiffs
+        self.attrdiffs = {"New Attrs": [], "Deleted Attrs": [], 
+                            "Changed Attrs": []}
+        self.mainbranches = mainbranches
+
+        self.showattriblinks = showattriblinks
+
+        # Builds self.attrdiffs based on the given attrdiffs, with the second 
+        # element of each tuple being the attribute's branch name              
+        if attrdiffs:
+            for key in attrdiffs:
+                for attr in attrdiffs[key]:
+                    if attr[1] == "attribType.Point":
+                        self.attrdiffs[key].append((attr[0], 
+                                                    "Point Attributes"))
+                    elif attr[1] == "attribType.Prim":
+                        self.attrdiffs[key].append((attr[0], 
+                                                    "Primitive Attributes"))
+                    elif attr[1] == "attribType.Vertex":
+                        self.attrdiffs[key].append((attr[0], 
+                                                    "Vertex Attributes"))
+                    else:
+                        self.attrdiffs[key].append((attr[0],    
+                                                    "Detail Attributes"))
     %>
 
     <table width="100%">
         <tr>
             <td width="50%">
-                % if countbranch:
+                % if maincountbranch:
                     <table>
-                        % for name, value in countbranch.rows():
+                        % for name, value in maincountbranch.rows():
                             ${ count_row(name, value, renames=renames) }
                         % endfor
                     </table>
@@ -90,7 +133,7 @@
 
     <table>
         ## Other properties
-        ${ self.branch_rows(geobranch, recursive=False, hidden=hidden + vectors) }
+        ${ self.branch_rows(maingeobranch, recursive=False, hidden=hidden + vectors) }
 
         ## L-System program
         % if lsysbranch:
@@ -99,24 +142,28 @@
     </table>
 
     ## Attributes
-    % if any((name in branches and branches[name].rows()) for name, _ in attrs):
+    ## Check if there are any branches in allbranches
+    % if any((name in allbranches and mainbranches[name].rows()) \
+    		for name, _ in attrs):
         <hr />
-        <table>
-            % for name, style in attrs:
-                % if name in branches:
-                    ${ self.show_attrs(branches, name, style, renames, verbose, debug) }
-                % endif
-            % endfor
-        </table>
+            <table>
+                % for name, style in attrs:
+                	## If the branch name is in the main and/or input node 
+                	## branches, show the attributes of this branch
+                    % if name in allbranches:
+                        ${ self.show_attrs(allbranches, name, style, renames, verbose, debug) }
+                    % endif
+                % endfor
+            </table>
     % endif
 
     ## Groups
-    % if any((name in branches) for name, _ in groups):
+    % if any((name in mainbranches) for name, _ in groups):
         <hr />
         <table>
             % for name, style in groups:
-                % if name in branches:
-                    ${ self.show_groups(branches, name, style, renames, verbose, debug) }
+                % if name in mainbranches:
+                    ${ self.show_groups(mainbranches, name, style, renames, verbose, debug) }
                 % endif
             % endfor
         </table>
@@ -124,16 +171,18 @@
 
     ## Volumes
     <%
-        volbranch = branches.get("Volumes")
-        sparsebranch = branches.get("Sparse Volumes")
+        volbranch = mainbranches.get("Volumes")
+        sparsebranch = mainbranches.get("Sparse Volumes")
     %>
     % if volbranch or sparsebranch:
         <hr />
         <table width="100%">
             % if volbranch:
+                ## ${ ni.volume_rows_html(volbranch, "volumes", verbose) }
                 ${ self.show_volumes(volbranch, "volumes", verbose) }
             % endif
             % if sparsebranch:
+                ## ${ ni.volume_rows_html(volbranch, "vdbs", verbose) }
                 ${ self.show_volumes(sparsebranch, "vdbs", verbose) }
             % endif
         </table>

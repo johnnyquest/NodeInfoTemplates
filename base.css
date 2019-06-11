@@ -31,6 +31,12 @@ th {
     color: #949494;
     text-align: left;
 }
+
+.rightheader {
+}
+th.rightheader {
+    text-align: right;
+}
 td {
     padding: 0 4px 2px 0;
     color: #ccc;
@@ -43,6 +49,7 @@ td {
 .key {
     color: #989EBF;
 }
+
 td.key {
     text-align: right;
 }
@@ -82,3 +89,4 @@ td.key {
 .hi {
     color: #9195a0;
 }
+

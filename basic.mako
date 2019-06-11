@@ -5,7 +5,7 @@
 </style>
 
 <p id="nodepath" style="color: #888; font-size: smaller;">
-${infoitem.path().rsplit('/', 1)[0] + '/'}
+${infoitem.path().rsplit(u'/', 1)[0]}/
 </p>
 
 <p id="nodename" style="font-weight: bold; color: white; font-size: x-large;">
