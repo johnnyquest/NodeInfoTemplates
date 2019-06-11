@@ -198,7 +198,7 @@ ${ "[]" if "Array" in datatype else "" }</tt>\
         if verbose or showname in showall:
             limit = len(rows)
         else:
-            limit = min(32, len(rows))
+            limit = min(20, len(rows))
     %>
 
     % if rows:
@@ -230,7 +230,7 @@ ${ "[]" if "Array" in datatype else "" }</tt>\
                         diff = "Changed"
                 %>
                 % if i:
-                    ,
+                    <br/>
                 % endif
                 ${ show_attr(d, diff, style, verbose, debug, compact) }
                 <%
