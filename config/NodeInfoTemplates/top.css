@@ -43,6 +43,15 @@
 .strings, .strings.value, .string.key {
     color: #d97cc2;
 }
-.vars, .vars.value, .vars.key {
-    color: #79cbd9;
+.pyobjects, .pyobjects.value, .pyobjects.key {
+    color: #7392eb;
+}
+.geometry, .geometry.value, .geometry.key {
+    color: #5dd4b3;
+}
+.arraysize {
+    font-size: smaller;
+}
+.expander {
+    font-size: large;
 }

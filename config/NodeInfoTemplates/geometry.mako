@@ -128,7 +128,7 @@
         % if (self.showdiffs and diff == "Deleted") or not self.showattriblinks:
             <tt class="${style} value">${ d["Label"] }</tt>
         % else:
-            <a class="${style} value" href="attrib://${style}/${d['Name']}">${ d["Label"] }</a>
+            <a class="${style} value" href="attrib:${style}/${d['Name']}">${ d["Label"] }</a>
         % endif
         <span class="details">
             %if verbose:

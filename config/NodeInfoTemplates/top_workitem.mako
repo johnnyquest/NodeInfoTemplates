@@ -7,28 +7,109 @@
 p { margin: 0; padding: 0;}
 </style>
 
-<%def name="list_numbers(items)">
-    % for i, item in enumerate(items):
-        <span class="unit">${ni.format_number(item)}</span>${", " if (i < len(items) - 1) else ""}
+<%def name="list_numbers(attrib)">
+    <tt>
+    % for i, item in enumerate(attrib.values):
+        <span class="unit">${ni.format_number(item)}</span>${", " if (i < len(attrib) - 1) else ""}
+    % endfor
+    </tt>
+</%def>
+
+<%def name="list_strings(attrib)">
+    % if len(attrib) == 1 and attrib.hasFlag(pdg.attribFlag.Operator):
+        <a href="node:${attrib[0]}">${attrib[0]}</a>
+    % else:
+	<tt>
+	% for i, item in enumerate(attrib.values):
+	    <span>${item | h}</span>${", " if (i < len(attrib) - 1) else ""}
+	% endfor
+	</tt>
+    % endif
+</%def>
+
+<%def name="list_files(attrib)">
+    % for i, item in enumerate(attrib.values):
+	<% local_path = scheduler.localizePath(item.path.replace('\\', '/')) %>
+	<% hip = hou.expandString("$HIP") %>
+	<% display_path = local_path.replace(hip, "$HIP") if hip else local_path %>
+	<% prefix = ni.until_colon(local_path) %>
+	<p>
+	% if localized:
+	    % if prefix in ("file", "http", "https", "ftp"):
+		<a href="${local_path}">${local_path}</a>
+	    % else :
+		<a href="file:${local_path}?${item.tag}">${display_path}</a>
+	    % endif
+	% else:
+	    <span>${item.path}</span>
+	% endif
+        <span class="resultdatatag">${item.tag}</span>
+	</p>
     % endfor
 </%def>
 
-<%def name="list_strings(items)">
-    % for i, item in enumerate(items):
-        <span>${item}</span>${", " if (i < len(items) - 1) else ""}
-    % endfor
+<%def name="list_python(attrib)">
+    <span>${str(attrib.object) | h}</span>
 </%def>
 
+<%def name="list_geometry(attrib)">
+    <span>${attrib.description | h}</span>
+</%def>
+
+<%def name="list_flags(attrib)">
+    <% flags = [] %>
+    % if attrib.hasFlag(pdg.attribFlag.EnvExport):
+	<% flags.append("Exported") %>
+    % endif
+    % if attrib.hasFlag(pdg.attribFlag.NoCopy):
+	<% flags.append("No Copy") %>
+    % endif
+
+    % if len(flags) > 0:
+	<span class="resultdatatag">[
+	% for i, item in enumerate(flags):
+	    ${item | h}${", " if (i < len(attrib) - 1) else ""}
+	% endfor
+	]</span>
+    %endif
+</%def>
+
+<%def name="list_attrib(key, attrib, css_class)">
+    % if not attrib.hasFlag(pdg.attribFlag.Internal):
+	<tr>
+	% if len(attrib) > 1:
+	    <td class="${css_class} data key">${key}
+		<span class="arraysize">[${len(attrib)}]</span>
+	    </td>
+	% else:
+	    <td class="${css_class} data key">${key}</td>
+	% endif
+
+	<td class="${css_class} value">
+	% if attrib.type == pdg.attribType.String:
+	    ${list_strings(attrib)}
+	% elif attrib.type == pdg.attribType.File:
+	    ${list_files(attrib)}
+	% elif attrib.type == pdg.attribType.PyObject:
+	    ${list_python(attrib)}
+	% elif attrib.type == pdg.attribType.Geometry:
+	    ${list_geometry(attrib)}
+	% else:
+	    ${list_numbers(attrib)}
+	% endif
+	</td>
+
+	${list_flags(attrib)}
+	</tr>
+    % endif
+</%def>
 
 <%
-	if data:
-		string_data = data.stringDataMap
-		int_data = data.intDataMap
-		float_data = data.floatDataMap
-	else:
-	    string_data = []
-	    int_data = []
-	    float_data = []
+	string_names = task.attribNames(pdg.attribType.String) + task.attribNames(pdg.attribType.File)
+	int_names = task.attribNames(pdg.attribType.Int)
+	float_names = task.attribNames(pdg.attribType.Float)
+	pyobject_names = task.attribNames(pdg.attribType.PyObject)
+	geo_names = task.attribNames(pdg.attribType.Geometry)
 %>
 
 <table>
@@ -46,6 +127,16 @@ p { margin: 0; padding: 0;}
 		<td class="value">${taskframe}</td>
 	</tr>
 	%endif
+	% if task.batchParent is not None:
+	<tr>
+		<td class="key">Batch Name</td>
+		<td class="value">${task.batchParent.name}</td>
+	</tr>
+	<tr>
+		<td class="key">Batch Index</td>
+		<td class="value">${task.batchIndex}</td>
+	</tr>
+	% endif
 	<tr>
 		<td class="key">Priority</td>
 		<td class="value">${priority}</td>
@@ -61,7 +152,7 @@ p { margin: 0; padding: 0;}
 	%if command:
 	<tr>
 		<td class="key">Command</td>
-		<td class="value">${command}</td>
+		<td class="value">${command | h}</td>
 	</tr>
 	%endif
 
@@ -108,13 +199,13 @@ p { margin: 0; padding: 0;}
                 <% prefix = ni.until_colon(value) %>
                 % if prefix in ("file", "http", "https", "ftp"):
                     ## Clickable URLs
-                    <a href="${value}">${display}</a>
+                    <a href="${value}">${display | h}</a>
                 % elif value.startswith("/") or value.startswith("\\") or (len(prefix) == 1 and prefix.isalpha()):
                     ## Unix or Windows file path
-                    <a href="file:${value.replace("\\", "/")}?${tag}">${display}</a>
+                    <a href="file:${value.replace("\\", "/")}?${tag}">${display | h}</a>
                 % else:
                     ## Otherwise not clickable
-                    <tt>${display}</tt>
+                    <tt>${display | h}</tt>
                 % endif
                 <span class="resultdatatag">${tag}</span>
             </p>
@@ -125,42 +216,39 @@ p { margin: 0; padding: 0;}
 	<tr>
 		<td class="key">Expected Output</td>
 		<td class="value">
-		%for value,tag,hash in expected_results:
-		    <p><tt>${value}</tt></p>
-		    <span class="resultdatatag">${tag}</span>
+		%for result in expected_results:
+		    <p><tt>${result.path}</tt></p>
+		    <span class="resultdatatag">${result.tag}</span>
 		%endfor
 		</td>
 	</tr>
 	% endif
 
-	% if environment:
-	    % for env_pair in sorted(environment):
-	    <tr>
-		    <td class="vars data key">${env_pair[0]}</td>
-		    <td class="vars value"><tt>${env_pair[1]}</tt></td>
-	    </tr>
-	    % endfor
-	% endif
+	%if status_uri and task.isOutOfProcess:
+        <tr>
+            <td class="key">Job Details</td>
+            <td><a href="${status_uri}">${status_uri}</a></td>
+        </tr>
+	%endif
 
-	%for key in sorted(string_data):
-	<tr>
-		<td class="strings data key">${key}</td>
-		<td class="strings value"><tt>${list_strings(string_data[key])}</tt></td>
-	</tr>
+	%for key in sorted(string_names):
+	    ${list_attrib(key, task[key], "strings")}
 	%endfor
 
-	%for key in sorted(int_data):
-	<tr>
-		<td class="ints data key">${key}</td>
-		<td class="ints value"><tt>${list_numbers(int_data[key])}</tt></td>
-	</tr>
+	%for key in sorted(int_names):
+	    ${list_attrib(key, task[key], "ints")}
 	%endfor
 
-	%for key in sorted(float_data):
-	<tr>
-		<td class="floats data key">${key}</td>
-		<td class="floats value"><tt>${list_numbers(float_data[key])}</tt></td>
-	</tr>
+	%for key in sorted(float_names):
+	    ${list_attrib(key, task[key], "floats")}
+	%endfor
+
+	%for key in sorted(pyobject_names):
+	    ${list_attrib(key, task[key], "pyobjects")}
+	%endfor
+
+	% for key in sorted(geo_names):
+	    ${list_attrib(key, task[key], "geometry")}
 	%endfor
 
 	%if partitions:
@@ -168,21 +256,16 @@ p { margin: 0; padding: 0;}
             <td class="key">${len(partitions)} Partitioned Items</td>
             <td class="value">
             %for i, part in enumerate(partitions):
+		<a href="workitem:${pdg_node.context.name}/${part.node.name}/${part.name}">
 		%if part.isUnsuccessful:
 		    <span class="Failed">${part.name}</span>
 		% else:
 		    ${part.name}
 		%endif
                 ${", " if (i < len(partitions) - 1) else ""}
+		</a>
             %endfor
             </td>
-        </tr>
-	%endif
-
-	%if status_uri:
-        <tr>
-            <td class="key">URI</td>
-            <td><a href="${status_uri}">${status_uri}</a></td>
         </tr>
 	%endif
 </table>

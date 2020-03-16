@@ -3,7 +3,7 @@
 
 <%def name="show_messages(messages, severity)">
     % for message in messages:
-        ${ self.kv_row(severity, message.replace('\n', '<br/>\n'), cls=severity.lower())}
+        ${ self.kv_row(severity, message, cls=severity.lower())}
     % endfor
 </%def>
 
