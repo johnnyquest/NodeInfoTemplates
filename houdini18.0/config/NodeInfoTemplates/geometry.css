@@ -1,0 +1,58 @@
+.grouptype {
+    font-weight: bold;
+    color: #949494;
+}
+
+.details {
+    color: #7A7A7A;
+    font-size: small;
+}
+
+.attrtype {
+    font-weight: bold;
+    color: #949494;
+}
+
+.points, .points.value, .points.key {
+    color: #97d079;
+}
+
+.primitives, .primitives.value, .primitives.key {
+    color: #ffcb56;
+}
+
+.vertices, .vertices.value, .vertices.key {
+    color: #d97cc2;
+}
+
+.edges, .edges.value, .edges.key {
+    color: #d97cc2;
+}
+
+.polygons, .polygons.value, .polygons.key {
+    color: #7392eb;
+}
+
+.vdbs, .vdbs.value, .vdbs .volumename, .vdbs.key {
+    color: #8AB2EA;
+}
+
+.volumes, .volumes.value, .volumes .volumename, .volumes.key {
+    color: #5dd4b3;
+}
+
+.vdbsdetails {
+    color: #B8B8B8;
+}
+
+.volumesdetails {
+    color: #B8B8B8;
+}
+
+.lsystem.value {
+    font-size: small;
+}
+
+.selected {
+    color: white;
+}
