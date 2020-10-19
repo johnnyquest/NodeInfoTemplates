@@ -1,0 +1,92 @@
+html, body {
+    color: #ccc;
+}
+
+table {
+    width: 100%;
+}
+
+p {
+    margin: 2px 0 2px 0;
+}
+
+span.item {
+    padding-right: 16px;
+}
+
+a {
+    color: #8AB2EA;
+}
+
+tt, pre {
+    font-family: "Source Code Pro", "DejaVu Sans Mono", "Courier", monospace;
+}
+
+table.divided {
+    border-top: 1px solid white;
+}
+
+th {
+    font-weight: bold;
+    color: #949494;
+    text-align: left;
+}
+
+.rightheader {
+}
+th.rightheader {
+    text-align: right;
+}
+td {
+    padding: 0 4px 2px 0;
+    color: #ccc;
+}
+
+.genericproperty {
+    color: #B8B8B8;
+}
+
+.key {
+    color: #989EBF;
+}
+
+td.key {
+    text-align: right;
+}
+
+.timedep {
+    color: #97C473;
+}
+
+.value {
+    color: #FFFFFF;
+}
+
+.dopobject {
+    font-weight: bold;
+    color: #D0D0D0;
+}
+
+.channel {
+    color: #80E080;
+}
+
+.error, .warning {
+    font-size: large;
+}
+.warning.key {color: #B8B834; }
+.warning.value { color: #fff7b5; }
+.error.key { color: #d04548; }
+.error.value { color: #d0aab5; }
+
+.unit {
+    /*white-space: nowrap;*/
+}
+
+.details {
+    color: #7f838e;
+}
+.hi {
+    color: #9195a0;
+}
+

@@ -1,0 +1,48 @@
+.key {
+    color: #98B3BF;
+}
+
+.pdginfo {
+    color: #7183A9;
+}
+
+.workitem {
+    color: #EEEEEE;
+}
+
+.Failed {
+    color: #FF0000;
+}
+
+.Canceled {
+    color: #EBB502;
+}
+
+.Cooked {
+    color: #8DD35F;
+}
+
+.CookedFromCache {
+    color: #8DD35F;
+}
+
+.Dirty {
+    color: #666666;
+}
+
+.resultdatatag {
+    color: #666666;
+}
+
+.ints, .ints.value, .ints.key {
+    color: #97d079;
+}
+.floats, .floats.value, .floats.key {
+    color: #ffcb56;
+}
+.strings, .strings.value, .string.key {
+    color: #d97cc2;
+}
+.vars, .vars.value, .vars.key {
+    color: #79cbd9;
+}
